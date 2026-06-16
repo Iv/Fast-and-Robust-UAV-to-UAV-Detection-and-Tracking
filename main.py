@@ -20,9 +20,35 @@ from util.UAV_subfunctions import *
 from util.Extract_Patch import *
 from util.Detect_Patch import *
 
+import sys
+import types
+import joblib
+import joblib.numpy_pickle
+import sklearn
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.externals import joblib
+# from sklearn.externals import joblib
+
+# Monkeypatching for old scikit-learn pickles
+if not hasattr(sklearn, 'externals'):
+    sklearn.externals = types.ModuleType('sklearn.externals')
+    sys.modules['sklearn.externals'] = sklearn.externals
+sklearn.externals.joblib = joblib
+sys.modules['sklearn.externals.joblib'] = joblib
+
+import sklearn.ensemble._weight_boosting as weight_boosting
+sys.modules['sklearn.ensemble.weight_boosting'] = weight_boosting
+import sklearn.tree._classes as tree_classes
+sys.modules['sklearn.tree.tree'] = tree_classes
+
+original_find_class = joblib.numpy_pickle.NumpyUnpickler.find_class
+def new_find_class(self, module, name):
+    if module == 'sklearn.ensemble.weight_boosting':
+        module = 'sklearn.ensemble._weight_boosting'
+    elif module == 'sklearn.tree.tree':
+        module = 'sklearn.tree._classes'
+    return original_find_class(self, module, name)
+joblib.numpy_pickle.NumpyUnpickler.find_class = new_find_class
 #import pandas
 
 
@@ -180,7 +206,10 @@ for ind in range(1,2):
         
         # read in one frame in order to obtain the video size
         frameidx = 1
-        color=cam.read()[1]
+        ret, color = cam.read()
+        if not ret or color is None:
+            print(f"Error: Could not read first frame from video {videoName}")
+            break
         color_gt=color.copy()#cam_gt.read()[1]
         prepreFrame = np.float32(cv2.cvtColor(color, cv2.COLOR_RGB2GRAY))
         h,w,channel = color.shape
@@ -203,7 +232,10 @@ for ind in range(1,2):
 
     
         # read in Xt-1
-        color=cam.read()[1]
+        ret, color = cam.read()
+        if not ret or color is None:
+            print(f"Error: Could not read second frame from video {videoName}")
+            break
         color_gt =color.copy()#cam_gt.read()[1]
         groundtruth = gt_text.readline()   
         frameidx+=1
@@ -231,7 +263,9 @@ for ind in range(1,2):
             print('frameID:', frameidx)
             gray = Xtminus1.copy()
             # read in current frame Xt
-            future_color = cam.read()[1]
+            ret, future_color = cam.read()
+            if not ret or future_color is None:
+                break
             if future_color is None:
                 frameidx+=1
                 outputFeature = "time_layer: "+ str(frameidx)+" detections: "

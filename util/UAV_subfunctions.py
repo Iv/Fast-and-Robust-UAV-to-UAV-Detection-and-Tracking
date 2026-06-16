@@ -93,7 +93,7 @@ def boundary(x,y,radius, w,h):
         x= w-2*radius-1
     if x-2*radius<0:
         x = 2*radius
-    return np.int(x), np.int(y)
+    return int(x), int(y)
 
 
 
@@ -115,6 +115,7 @@ def boundary(x,y,radius, w,h):
 
          
 def draw_str(dst, x, y, s):
+    x, y = int(x), int(y)
     # show text in the image
     cv2.putText(dst, s, (x+1, y+1), cv2.FONT_HERSHEY_PLAIN, 1.0, (0, 0, 0), thickness = 2, lineType=cv2.LINE_AA)
     cv2.putText(dst, s, (x, y), cv2.FONT_HERSHEY_PLAIN, 1.0, (255, 255, 255), lineType=cv2.LINE_AA)
@@ -541,7 +542,7 @@ def computeNo(Patches, gt_mask,  R, h, w):
         if area>4*R*R:
             area = 1600
         overlaparea = (gt_mask[yyC-R:yyC+R,xxC-R:xxC+R]>0).sum()
-        if np.float(overlaparea)/np.float(area)>ratiothr:
+        if float(overlaparea)/float(area)>ratiothr:
             hit+=1
         else:
             fa+=1
@@ -573,7 +574,7 @@ def ClasifiyVis(f, radius,bacgroundsubtractedimg, oriImage, pred_y, detectedLocs
             if lbarea<area:
                 area=lbarea
         overlaparea = (gt_mask[yyC-R:yyC+R,xxC-R:xxC+R]>0).sum()
-        if np.float(overlaparea)/np.float(area)>ratiothr:
+        if float(overlaparea)/float(area)>ratiothr:
             ft_feature+=str(int(1))+'\n'
             #hit+=1
             cv2.rectangle(oriImage,(np.int16(xxC-R),np.int16(yyC-R)),(np.int16(xxC+R),np.int16(yyC+R)), (0,255,0),1)
@@ -611,7 +612,7 @@ def ClasifiyVis_ori(f, radius,bacgroundsubtractedimg, oriImage, pred_y, detected
             if lbarea<area:
                 area=lbarea
         overlaparea = (gt_mask[yyC-R:yyC+R,xxC-R:xxC+R]>0).sum()
-        if np.float(overlaparea)/np.float(area)>ratiothr:
+        if float(overlaparea)/float(area)>ratiothr:
             ft_feature+=str(int(1))+'\n'
             #hit+=1
             #cv2.rectangle(oriImage,(np.int16(xxC-R),np.int16(yyC-R)),(np.int16(xxC+R),np.int16(yyC+R)), (0,255,0),1)
@@ -754,7 +755,7 @@ def CCL(binaryMask,annotation,Ind):
     for cnt in contours:
         xs,ys,ws,hs = cv2.boundingRect(cnt)
         cv2.rectangle(newMask,(xs,ys),(xs+ws,ys+hs),255,-1)
-        if Ind is 0:
+        if Ind == 0:
             cv2.rectangle(annotation,(xs,ys),(xs+ws,ys+hs),(0,255,0),2)
         else:
             cv2.rectangle(annotation,(xs,ys),(xs+ws,ys+hs),(0,0,255),2)
