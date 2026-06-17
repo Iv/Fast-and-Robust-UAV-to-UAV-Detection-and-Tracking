@@ -41,8 +41,9 @@ https://www.computer.org/csdl/journal/ec/5555/01/09519550/1wc8Vbe1r7G
 ## Content
 1. Requirements
 2. Usage
-3. Results
-4. Contacts
+3. Docker Support
+4. Results
+5. Contacts
 ## Requirements
 
     anaconda
@@ -55,6 +56,15 @@ https://www.computer.org/csdl/journal/ec/5555/01/09519550/1wc8Vbe1r7G
 ## Usage
 ### 
 run "demo.sh" to test the example video
+
+
+## Docker Support
+For easy deployment and execution with GPU support, you can use Docker. See [README_docker.md](README_docker.md) for detailed instructions.
+
+Quick start:
+```bash
+docker-compose up
+```
 
 
 ## Results

@@ -1,0 +1,14 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.db
+.ipynb_checkpoints
+Experiment_Results/*
+!Experiment_Results/.gitkeep
+Data/*
+!Data/example.mp4
+processing.log
+pid.txt

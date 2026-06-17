@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  uav-detection:
+    build: .
+    image: uav-drone-detection:latest
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ./Data:/app/Data
+      - ./Experiment_Results:/app/Experiment_Results
+      - ./models:/app/models
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility,video
+    command: python predict_drone.py --input Data/example.mp4 --output Experiment_Results/Final/Video/output.mp4
